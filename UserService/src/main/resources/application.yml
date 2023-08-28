@@ -1,0 +1,76 @@
+
+
+server:
+  port: 8081
+
+
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/users_db
+    username: root
+    password: jaiganeshji
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+
+
+    ##  Kafka Consumer configuration
+
+
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: myGroup
+      auto-offset-reset: earliest
+      #key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      #value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+
+
+      properties:
+        spring.json.trusted.packages: '*'
+
+
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+
+
+    #        spring.json.type.mapping: >
+    #          stockInfo:com.hims.user.service.payloads.StockInfo
+
+
+
+    ## ErrorHandlingDeserializer for both key and value deserializers. This handles deserialization errors.
+    ## The delegate deserializers are set to StringDeserializer for key and JsonDeserializer for value. These perform the actual deserialization.
+
+
+
+
+
+  application:
+    name: HARNEET-USER-SERVICE
+
+
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate: org.hibernate.dialect.MySQL8Dialect
+
+
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+

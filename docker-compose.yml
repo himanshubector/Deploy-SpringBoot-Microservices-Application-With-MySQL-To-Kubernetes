@@ -1,0 +1,139 @@
+
+version: "3.8"
+
+
+
+volumes:
+  shared-vol:
+
+
+
+
+services:
+
+
+################################################################################################################  SERVICE-REGISTRY-SERVICE
+  service-discovery-server:
+    container_name: service_registry_container
+    build:
+      context: ./ServiceRegistry
+      dockerfile: Dockerfile
+    image: service-registry:latest
+    ports:
+      - "8761:8761"
+
+###############################################################################################################  USER-SERVICE
+
+#    - spring.datasource.url=jdbc:mysql://dbservice:3306/customer_app?createDatabaseIfNotExist=true
+#    - spring.datasource.username=root
+#    - spring.datasource.password=jaiganeshji
+
+  user-service:
+    volumes:
+#      - common-classes:/app/classes
+      - shared-vol:/app/data
+
+
+    container_name: user_service_container
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile
+    image: user-service:latest
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/my_new_db
+#      SPRING_DATASOURCE_USERNAME: root
+#      SPRING_DATASOURCE_PASSWORD: jaiganeshji
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_JPA_SHOW_SQL: true
+
+
+      - spring.datasource.url=jdbc:mysql://user-database:3306/user_hims_db?createDatabaseIfNotExist=true
+      - spring.datasource.username=root
+      - spring.datasource.password=jaiganeshji
+      - spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
+
+
+
+#      - "SPRING_DATASOURCE_URL = jdbc:mysql://user-database:3306/user_db"
+#      - "SPRING_DATASOURCE_USERNAME: root"
+#      - "SPRING_DATASOURCE_PASSWORD: jaiganeshji"
+#      - "SPRING_JPA_HIBERNATE_DDL_AUTO: update"
+#      - "SPRING_JPA_SHOW_SQL: true"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - service-discovery-server
+      - user-database
+      - commondtos-service
+    links:
+      - service-discovery-server
+#      - commondtos-service
+    networks:
+      - usermicroserviceapp
+
+
+#############################################################################################################  USER-DATABASE-SERVICE
+
+
+
+
+  user-database:
+    platform: linux/x86_64
+    container_name: user_service_db_container
+    ports:
+      - "3306:3306"
+    image: mysql:latest
+    volumes:
+      - ./data:/var/lib/mysql
+    networks:
+      - usermicroserviceapp
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=jaiganeshji
+#      - MYSQL_DATABASE=user_db
+#    hostname: mysqldb
+
+#    volumes:
+#      - /data/mysql
+
+
+################################################################################################################  COMMONDTOS-SERVICE
+
+
+
+  commondtos-service:
+    container_name: commondtos_service_container
+    build:
+      context: ./CommonDtos
+      dockerfile: Dockerfile
+    image: commondtos-service:latest
+
+    volumes:
+#      - common-classes:/app/classes
+
+      - shared-vol:/app/data
+
+#    ports:
+#      - "3306:3306"
+#    depends_on:
+#      - service-discovery-server
+#      - user-database
+#    links:
+#      - user-service
+    networks:
+      - usermicroserviceapp
+
+
+################################################################################################################  NETWORKS
+
+
+networks:
+  usermicroserviceapp:
+    driver: bridge
+
+
+
+
+
+
+
