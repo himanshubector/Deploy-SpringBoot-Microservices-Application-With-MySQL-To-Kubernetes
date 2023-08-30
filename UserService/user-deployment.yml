@@ -1,0 +1,117 @@
+
+
+apiVersion: v1 # Kubernetes API version
+kind: Service # Kubernetes resource kind we are creating
+metadata: # Metadata of the resource kind we are creating
+  name: user-service
+#  labels:
+#    app: serviceregistry-deployment
+#    namespace: default
+spec:
+  selector:
+    app: user-app
+  ports:
+    - protocol: "TCP"
+      port: 8081 # The port that the service is running on in the cluster
+      targetPort: 8081 # The port exposed by the service
+  type: NodePort # type of the service. LoadBalancer indicates that our service will be external.
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment # Kubernetes resource kind we are creating
+metadata:
+  name: user-deployment
+spec:
+  selector:
+    matchLabels:
+      app: user-app
+  replicas: 2 # Number of replicas that will be created for this deployment
+  template:
+    metadata:
+      labels:
+        app: user-app
+    spec:
+      containers:
+        - name: user-app
+          image: himsb/user-app-image:1.0 # Image that will be used to containers in the cluster
+
+          volumeMounts:
+            - name: common-vol
+              mountPath: /src/main/java/com/javatechie
+
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081 # The port that the container is running on in the cluster
+        #      restartPolicy: Always
+
+          env: # Setting Environmental Variables
+          - name: DB_HOST   # Setting Database host address
+            value: mysql
+          - name: DB_NAME  # Setting Database name
+            value: user_service_db
+          - name: DB_USERNAME  # Setting Database username
+            value: root
+          - name: DB_PASSWORD # Setting Database password
+            value: root
+
+
+
+      volumes:
+        - name: common-vol
+          configMap:
+            name: common-config
+
+
+
+
+
+
+
+
+# Build an image ->  docker build -t user-app-image .
+
+
+
+# Refer ->  https://www.section.io/engineering-education/spring-boot-kubernetes/
+
+
+
+
+#Here are the steps to dockerize a microservices application using Kubernetes where you have a common module for shared POJO/DTO classes:
+#
+#
+#  1. Create a Dockerfile for each microservice. This will build an image for that service.
+#  2. For the common module, create a Dockerfile to build an image that just packages the JAR with the common classes.
+#  3. Build Docker images for each of the microservices and the common module.
+#  4. Push these images to a registry like Docker Hub so they are accessible to Kubernetes.
+#  5. For deploying on Kubernetes, create Deployment and Service manifests for each microservice.
+#  6. For the common module, create a Kubernetes ConfigMap containing the JAR file.
+#  7. In the Deployments for other microservices, add a volume mount that maps this ConfigMap.
+#  8. The JAR from the common module will be available to other microservices via this volume mount.
+#  9. Deploy all the manifests to Kubernetes using kubectl.
+#  10. The microservices will run with the shared common classes mapped via ConfigMap volume.
+#
+#
+# This allows you to leverage Kubernetes ConfigMaps to share common code across microservices in a decentralized way. Let me know if you need any examples or have additional questions!
+#
+#
+#
+# corr. to point 4 ----->
+#
+#
+#  docker tag registry-app-image:latest himsb/registry-app-image:latest
+#
+#
+#  docker login -u himsb
+#
+#
+#  prompt for pwd - Infy@2014
+#
+#
+#
+#  docker push himsb/registry-app-image:latest
+#
+#
+

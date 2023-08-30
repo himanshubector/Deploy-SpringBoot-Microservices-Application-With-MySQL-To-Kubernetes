@@ -8,6 +8,7 @@ import org.hibernate.type.TrueFalseConverter;
 
 
 
+
 @Entity
 @Table(name = "notifications")
 @Data

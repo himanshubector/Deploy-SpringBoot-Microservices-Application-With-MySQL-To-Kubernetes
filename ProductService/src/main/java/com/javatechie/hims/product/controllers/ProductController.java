@@ -16,7 +16,6 @@ public class ProductController
     @Autowired
     private StockService stockService;
 
-
 /*    @Autowired
     private ProductService productService;*/
 

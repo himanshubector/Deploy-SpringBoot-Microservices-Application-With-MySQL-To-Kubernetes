@@ -1,0 +1,118 @@
+
+
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: common-config
+  #namespace: default
+
+data:
+  common.jar: |-
+    Y29tbW9uZHRvcy1zZXJ2aWNlLmphcgo=
+    
+    
+
+
+
+#
+#  ConfigMaps is a way to decouple the application specific artifacts from the container image, thereby enabling better portability and externalization.
+#
+#
+#
+#  ConfigMaps is a simple key/value store, which can store simple values to files.
+#
+#
+#  Kubernetes ConfigMaps also allows us to load a file as a ConfigMap property
+#
+#
+#  Let's create a Kubernetes ConfigMaps to hold the property called greeter.prefix, which will then be injected into the Kubernetes deployment via an environment variable called GREETER_PREFIX.
+#
+#
+#
+#  Once we have the Kubernetes ConfigMaps created, we then need to inject the GREETER_PREFIX as an environment variable into the Kubernetes deployment.
+#
+#
+#
+#  Create ConfigMap
+#  kubectl create configmap spring-boot-configmaps-demo --from-literal=greeter.prefix="Hello"
+#
+#
+#
+#
+#  kubectl get configmap spring-app-config -o yaml
+#
+#  You can see the contents of the ConfigMap using this command
+#
+#
+#
+#
+#
+#
+#  kubectl apply -f configmap.yaml
+#
+#
+# 3.  Verify ConfigMap is created:
+#  <!---->
+#
+#
+#  kubectl get configmaps
+#
+#
+#  4.  Create the deployment YAML (e.g. deployment.yaml) with the ConfigMap volume mount
+#
+#
+# 5.  Apply the deployment:
+#  <!---->
+#
+#
+#
+#  kubectl apply -f deployment.yaml
+#
+#
+#
+# 6.  Verify deployment is created:
+#  <!---->
+#
+#
+#
+#  kubectl get deployments
+#
+#
+#
+# 7.  The pods will be created and mounted with the ConfigMap volume. You can verify it:
+#  <!---->
+#
+#
+#
+#  kubectl describe pod <pod-name>
+#
+#
+#
+#  Check the "Volumes" section to ensure the ConfigMap volume is mounted correctly.
+#
+#
+#
+# 8. You can also log into the pod and check the contents:
+#  <!---->
+#
+#
+#  kubectl exec -it <pod-name> -- /bin/sh
+#
+#  cat /app/lib/common-1.0.jar
+#
+#
+#  This should print the base64 decoded contents of the JAR file from the ConfigMap.
+#
+#
+#
+#
+#
+#  Command to get container name from pod name -
+#
+#
+#  kubectl get pod user-deployment-6cc579c98c-9w2cf -o jsonpath='{.spec.containers[*].name}'
+#
+#
+#
+
